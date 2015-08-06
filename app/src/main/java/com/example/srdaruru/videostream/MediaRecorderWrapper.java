@@ -15,7 +15,6 @@ public class MediaRecorderWrapper {
     private static String mFileName = null;
 
     private MediaRecorder mRecorder = null;
-
     private MediaPlayer   mPlayer = null;
 
     public MediaRecorderWrapper(String fileName) {
@@ -24,11 +23,40 @@ public class MediaRecorderWrapper {
     }
 
     public void onPause() {
-        if (mRecorder != null) {
-            mRecorder.release();
-            mRecorder = null;
+        try
+        {
+            if (mRecorder != null) {
+                mRecorder.release();
+                mRecorder = null;
+            }
         }
+        catch (Exception ex)
+        {
+            Log.e("failed stop pausing:", ex.getStackTrace().toString());
+            Log.e("failed stop pausing:", ex.getMessage());
+        }
+    }
 
+    public void onPlay(boolean start) {
+        if (start) {
+            startPlaying();
+        } else {
+            stopPlaying();
+        }
+    }
+
+    private void startPlaying() {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(mFileName);
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+    }
+
+    private void stopPlaying() {
         if (mPlayer != null) {
             mPlayer.release();
             mPlayer = null;
@@ -36,32 +64,55 @@ public class MediaRecorderWrapper {
     }
 
     public void onRecord(boolean start) {
-        if (start) {
-            startRecording();
-        } else {
-            stopRecording();
+        try {
+            if (start) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.e("failed stop onrecord:", ex.getStackTrace().toString());
+            Log.e("failed stop onrecord:", ex.getMessage());
         }
     }
 
     private void startRecording() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        try
+        {
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+            mRecorder.setOutputFile(mFileName);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            try {
+                mRecorder.prepare();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "prepare() failed");
+                Log.e("failed exception:", e.getMessage());
+            }
+
+            mRecorder.start();
         }
-
-        mRecorder.start();
+        catch (Exception ex)
+        {
+            Log.e("failed recording:", ex.getStackTrace().toString());
+            Log.e("failed recording:", ex.getMessage());
+        }
     }
 
     private void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
+        try {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
+        catch (Exception ex)
+        {
+            Log.e("failed stop recording:", ex.getStackTrace().toString());
+            Log.e("failed stop recording:", ex.getMessage());
+        }
     }
 }

@@ -1,7 +1,11 @@
 package com.example.srdaruru.videostream;
 
+import android.content.Context;
+import android.content.Intent;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
@@ -15,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,6 +30,9 @@ public class MainActivity extends ActionBarActivity {
     private boolean audioPlayToggle = false;
     private VideoViewWrapper videoViewWrapper = null;
     private MediaRecorderWrapper mediaRecorderWrapper = null;
+    Button videoButton = null;
+    Intent mServiceIntent;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,24 +47,76 @@ public class MainActivity extends ActionBarActivity {
             //videoViewWrapper.FirstRender();
         }
 
-        mediaRecorderWrapper = new MediaRecorderWrapper("reversedub/audioout.3gp");
+        context = this;
+        String fileName = "reversedub/audioout.m4a";
+        String mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFileName += "/" + fileName;
+        File file = new File(mFileName);
+        if(file.exists())
+        {
+            file.delete();
+        }
 
-        final Button videoButton = (Button) findViewById(R.id.controlBtn);
+        mediaRecorderWrapper = new MediaRecorderWrapper(fileName);
+
+        videoButton = (Button) findViewById(R.id.controlBtn);
         videoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 audioPlayToggle = !audioPlayToggle;
                 if (audioPlayToggle) {
+                    //new StartMediaRecorderTask().execute(null, null, null);
+                    /*mServiceIntent = new Intent(context, MediaRecorderService.class);
+                    mServiceIntent.putExtra("Path", "reversedub/audioout7.3gp");
+                    mServiceIntent.putExtra("RecordToggle", audioPlayToggle);
+                    startService(mServiceIntent);*/
                     mediaRecorderWrapper.onRecord(audioPlayToggle);
                     videoViewWrapper.onPlay(audioPlayToggle);
                     videoButton.setText("Cancel");
                 } else {
-                    mediaRecorderWrapper.onRecord(audioPlayToggle);
+                   /* mServiceIntent = new Intent(context, MediaRecorderService.class);
+                    mServiceIntent.putExtra("Path", "reversedub/audioout7.3gp");
+                    mServiceIntent.putExtra("RecordToggle", "false");
+                    startService(mServiceIntent);*/
+                    mediaRecorderWrapper.onRecord(false);
                     videoViewWrapper.onPlay(audioPlayToggle);
                     videoButton.setText("Record");
+                    mediaRecorderWrapper.onPlay(true);
                 }
             }
         });
+
+        vidView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mediaRecorderWrapper.onRecord(false);
+                    /*mServiceIntent = new Intent(context, MediaRecorderService.class);
+                    mServiceIntent.putExtra("Path", "reversedub/audioout6.3gp");
+                    mServiceIntent.putExtra("RecordToggle", "false");
+                    startService(mServiceIntent);*/
+                    videoButton.setText("Merge");
+                    mediaRecorderWrapper.onPlay(true);
+                }
+            }
+        );
+    }
+
+    private class StartMediaRecorderTask extends AsyncTask<Void, Void, Boolean> {
+        protected Boolean doInBackground(Void... voids) {
+            if (mediaRecorderWrapper != null) {
+                mediaRecorderWrapper.onRecord(true);
+                return true;
+            }
+
+            return false;
+        }
+
+
+        protected void onPostExecute(Boolean result) {
+            if (videoButton != null) {
+                videoButton.setText("Cancel");
+            }
+        }
     }
 
     @Override
@@ -79,5 +139,10 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        mediaRecorderWrapper.onPause();
     }
 }
