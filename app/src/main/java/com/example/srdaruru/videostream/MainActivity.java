@@ -51,14 +51,14 @@ public class MainActivity extends ActionBarActivity {
 
         context = this;
         String uuid = UUID.randomUUID().toString().replaceAll("-","");
-        String fileName = String.format("reversedub/audioout.m4a");
+        String fileName = String.format("reversedub/audioout{0}.m4a", uuid);
         String mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
         mFileName += "/" + fileName;
-        /*File file = new File(mFileName);
+        File file = new File(mFileName);
         if(file.exists())
         {
             file.delete();
-        }*/
+        }
 
         mediaRecorderWrapper = new MediaRecorderWrapper(fileName);
 
