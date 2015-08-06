@@ -51,13 +51,9 @@ public class MainActivity extends ActionBarActivity {
         context = this;
         String uuid = UUID.randomUUID().toString().replaceAll("-","");
         String fileName = String.format("reversedub/audioout{0}.m4a", uuid);
-        String mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
         mFileName += "/" + fileName;
-        File file = new File(mFileName);
-        if(file.exists())
-        {
-            file.delete();
-        }
+        DeleteFileIfExists(mFileName);
 
         mediaRecorderWrapper = new MediaRecorderWrapper(fileName);
 
@@ -75,6 +71,7 @@ public class MainActivity extends ActionBarActivity {
                     videoViewWrapper.onPlay(audioPlayToggle);
                     videoButton.setText("Record");
                     mediaRecorderWrapper.onPlay(true);
+                    DeleteFileIfExists(mFileName);
                 }
             }
         });
@@ -90,6 +87,15 @@ public class MainActivity extends ActionBarActivity {
         );
 
         // Add muxing here after you click on merge
+    }
+
+    private void DeleteFileIfExists(String mFileName) {
+        if (mFileName != null) {
+            File file = new File(mFileName);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
     }
 
     @Override
@@ -119,13 +125,6 @@ public class MainActivity extends ActionBarActivity {
         mediaRecorderWrapper.onPause();
 
         // enable the following after mux integration is done.
-        /*if (mFileName != null)
-        {
-            File file = new File(mFileName);
-            if(file.exists())
-            {
-                file.delete();
-            }
-        }*/
+        //DeleteFileIfExists(mFileName);
     }
 }
