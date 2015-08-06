@@ -41,7 +41,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         VideoView vidView = (VideoView)findViewById(R.id.myVideo);
-        //String vidAddress = "https://archive.org/download/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
         String vidAddress = "reversedub/video.mp4";
         videoViewWrapper = new VideoViewWrapper(vidView, vidAddress);
 
@@ -68,19 +67,10 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 audioPlayToggle = !audioPlayToggle;
                 if (audioPlayToggle) {
-                    //new StartMediaRecorderTask().execute(null, null, null);
-                    /*mServiceIntent = new Intent(context, MediaRecorderService.class);
-                    mServiceIntent.putExtra("Path", "reversedub/audioout7.3gp");
-                    mServiceIntent.putExtra("RecordToggle", audioPlayToggle);
-                    startService(mServiceIntent);*/
                     mediaRecorderWrapper.onRecord(audioPlayToggle);
                     videoViewWrapper.onPlay(audioPlayToggle);
                     videoButton.setText("Cancel");
                 } else {
-                   /* mServiceIntent = new Intent(context, MediaRecorderService.class);
-                    mServiceIntent.putExtra("Path", "reversedub/audioout7.3gp");
-                    mServiceIntent.putExtra("RecordToggle", "false");
-                    startService(mServiceIntent);*/
                     mediaRecorderWrapper.onRecord(false);
                     videoViewWrapper.onPlay(audioPlayToggle);
                     videoButton.setText("Record");
@@ -93,33 +83,13 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mediaRecorderWrapper.onRecord(false);
-                    /*mServiceIntent = new Intent(context, MediaRecorderService.class);
-                    mServiceIntent.putExtra("Path", "reversedub/audioout6.3gp");
-                    mServiceIntent.putExtra("RecordToggle", "false");
-                    startService(mServiceIntent);*/
                     videoButton.setText("Merge");
                     mediaRecorderWrapper.onPlay(true);
                 }
             }
         );
-    }
 
-    private class StartMediaRecorderTask extends AsyncTask<Void, Void, Boolean> {
-        protected Boolean doInBackground(Void... voids) {
-            if (mediaRecorderWrapper != null) {
-                mediaRecorderWrapper.onRecord(true);
-                return true;
-            }
-
-            return false;
-        }
-
-
-        protected void onPostExecute(Boolean result) {
-            if (videoButton != null) {
-                videoButton.setText("Cancel");
-            }
-        }
+        // Add muxing here after you click on merge
     }
 
     @Override
@@ -147,6 +117,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onPause() {
         mediaRecorderWrapper.onPause();
+
+        // enable the following after mux integration is done.
         /*if (mFileName != null)
         {
             File file = new File(mFileName);
