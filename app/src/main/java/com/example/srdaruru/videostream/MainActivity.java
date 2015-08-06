@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.UUID;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -33,6 +34,7 @@ public class MainActivity extends ActionBarActivity {
     Button videoButton = null;
     Intent mServiceIntent;
     Context context;
+    String mFileName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +50,15 @@ public class MainActivity extends ActionBarActivity {
         }
 
         context = this;
-        String fileName = "reversedub/audioout.m4a";
+        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+        String fileName = String.format("reversedub/audioout.m4a");
         String mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
         mFileName += "/" + fileName;
-        File file = new File(mFileName);
+        /*File file = new File(mFileName);
         if(file.exists())
         {
             file.delete();
-        }
+        }*/
 
         mediaRecorderWrapper = new MediaRecorderWrapper(fileName);
 
@@ -144,5 +147,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onPause() {
         mediaRecorderWrapper.onPause();
+        /*if (mFileName != null)
+        {
+            File file = new File(mFileName);
+            if(file.exists())
+            {
+                file.delete();
+            }
+        }*/
     }
 }
