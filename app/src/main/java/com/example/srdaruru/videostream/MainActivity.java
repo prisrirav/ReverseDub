@@ -50,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
 
         context = this;
         String uuid = UUID.randomUUID().toString().replaceAll("-","");
-        String fileName = String.format("reversedub/audioout{0}.m4a", uuid);
+        String fileName = String.format("reversedub/audioout.m4a", uuid);
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
         mFileName += "/" + fileName;
         DeleteFileIfExists(mFileName);
@@ -71,7 +71,7 @@ public class MainActivity extends ActionBarActivity {
                     videoViewWrapper.onPlay(audioPlayToggle);
                     videoButton.setText("Record");
                     mediaRecorderWrapper.onPlay(true);
-                    DeleteFileIfExists(mFileName);
+                    //DeleteFileIfExists(mFileName);
                 }
             }
         });
