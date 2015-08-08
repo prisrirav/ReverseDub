@@ -83,7 +83,7 @@ public class MediaRecorderWrapper {
         {
             mRecorder = new MediaRecorder();
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             mRecorder.setOutputFile(mFileName);
             mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
