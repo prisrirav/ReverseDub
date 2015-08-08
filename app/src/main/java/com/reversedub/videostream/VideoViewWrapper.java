@@ -1,13 +1,10 @@
-package com.example.srdaruru.videostream;
+package com.reversedub.videostream;
 
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.widget.VideoView;
 
-/**
- * Created by srdaruru on 8/4/2015.
- */
 public class VideoViewWrapper {
     private static final String LOG_TAG = "AudioRecordTest";
     private static String mFileName = null;

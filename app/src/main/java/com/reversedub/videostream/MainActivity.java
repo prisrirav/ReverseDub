@@ -1,4 +1,4 @@
-package com.example.srdaruru.videostream;
+package com.reversedub.videostream;
 
 import android.content.Context;
 import android.content.Intent;
@@ -87,6 +87,7 @@ public class MainActivity extends ActionBarActivity {
         );
 
         // Add muxing here after you click on merge
+
     }
 
     private void DeleteFileIfExists(String mFileName) {

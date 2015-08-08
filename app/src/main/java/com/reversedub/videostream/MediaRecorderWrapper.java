@@ -1,4 +1,4 @@
-package com.example.srdaruru.videostream;
+package com.reversedub.videostream;
 
 import android.media.MediaRecorder;
 import android.media.MediaPlayer;
@@ -7,9 +7,6 @@ import android.util.Log;
 
 import java.io.IOException;
 
-/**
- * Created by srdaruru on 8/4/2015.
- */
 public class MediaRecorderWrapper {
     private static final String LOG_TAG = "AudioRecordTest";
     private static String mFileName = null;
