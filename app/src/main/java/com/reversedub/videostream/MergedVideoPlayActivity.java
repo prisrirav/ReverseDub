@@ -20,8 +20,8 @@ public class MergedVideoPlayActivity extends ActionBarActivity {
         setContentView(R.layout.activity_merged_video_play);
         Intent intent = getIntent();
 
-        //refactor strings
         String vidAddress = intent.getStringExtra(MERGED_FILE_KEYNAME);
+        //String vidAddress = "/sdcard/reversedub/videoTest.mp4";
         VideoView vidView = (VideoView)findViewById(R.id.mergedVideo);
         VideoViewWrapper videoViewWrapper = new VideoViewWrapper(vidView, vidAddress);
         videoViewWrapper.onPlay(true);
