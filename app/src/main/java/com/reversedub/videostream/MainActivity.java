@@ -3,12 +3,7 @@ package com.reversedub.videostream;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.MediaController;
@@ -18,12 +13,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.UUID;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -88,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
                 public void onCompletion(MediaPlayer mp) {
                     mediaRecorderWrapper.onRecord(false);
                     videoButton.setText(VideoButtonText.Merge.toString());
-                    Boolean result = AudioVideoMuxer.CombineFilesUsingMp4Parser(getFullPath(videoFile), getFullPath(audioOutFile), getFullPath(videoOutfile));
+                    Boolean result = AudioVideoMuxer.Combine(getFullPath(videoFile), getFullPath(audioOutFile), getFullPath(videoOutfile));
                     if (result) {
                         videoButton.setText(VideoButtonText.Merge.toString());
                     } else {
