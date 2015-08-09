@@ -35,6 +35,9 @@ public class MainActivity extends ActionBarActivity {
     Intent mServiceIntent;
     Context context;
     String mFileName = null;
+    private final static String videoFile = "reversedub/video.mp4";
+    private final static String audioOutFile = "reversedub/audioout.m4a";
+    private final static String videoOutfile = "reversedub/videoMerged.mp4";
 
     private enum VideoButtonText{
         Record,
@@ -47,22 +50,19 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         VideoView vidView = (VideoView)findViewById(R.id.myVideo);
-        String vidAddress = "reversedub/video.mp4";
-        videoViewWrapper = new VideoViewWrapper(vidView, vidAddress);
+        videoViewWrapper = new VideoViewWrapper(vidView, videoFile);
 
         if(!audioPlayToggle) {
             //videoViewWrapper.FirstRender();
         }
 
         context = this;
-        String uuid = UUID.randomUUID().toString().replaceAll("-","");
-        String fileName = String.format("reversedub/audioout.m4a", uuid);
         String externalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName = externalDirectory + "/" + fileName;
+        mFileName = externalDirectory + "/" + audioOutFile;
         DeleteFileIfExists(mFileName);
-        DeleteFileIfExists(externalDirectory + "/" + "reversedub/output.mp4");
+        DeleteFileIfExists(externalDirectory + "/" + videoOutfile);
 
-        mediaRecorderWrapper = new MediaRecorderWrapper(fileName);
+        mediaRecorderWrapper = new MediaRecorderWrapper(audioOutFile);
 
         videoButton = (Button) findViewById(R.id.controlBtn);
         videoButton.setOnClickListener(new View.OnClickListener() {
@@ -85,8 +85,7 @@ public class MainActivity extends ActionBarActivity {
                 {
                     Intent mergeActivityIntent = new Intent(MainActivity.this, MergedVideoPlayActivity.class);
 
-                    //Refactor strings
-                    mergeActivityIntent.putExtra(MergedVideoPlayActivity.MERGED_FILE_KEYNAME, "/sdcard/reversedub/output.mp4");
+                    mergeActivityIntent.putExtra(MergedVideoPlayActivity.MERGED_FILE_KEYNAME, videoOutfile);
                     startActivity(mergeActivityIntent);
                     finish();
                 }
@@ -97,21 +96,16 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mediaRecorderWrapper.onRecord(false);
-                    videoButton.setText("Merge");
-                    Boolean result = AudioVideoMuxer.CombineFilesUsingMp4Parser("/sdcard/reversedub/video.mp4", "/sdcard/reversedub/audioout.m4a", "/sdcard/reversedub/output.mp4");
+                    videoButton.setText(VideoButtonText.Merge.toString());
+                    Boolean result = AudioVideoMuxer.CombineFilesUsingMp4Parser(videoFile, audioOutFile, videoOutfile);
                     if (result) {
                         videoButton.setText(VideoButtonText.Merge.toString());
                     } else {
                         videoButton.setText("Operation failed.");
                     }
-
-                    //mediaRecorderWrapper.onPlay(true);
                 }
             }
         );
-
-        // Add muxing here after you click on merge
-
     }
 
     private void DeleteFileIfExists(String mFileName) {
