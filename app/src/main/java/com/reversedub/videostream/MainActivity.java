@@ -27,18 +27,14 @@ import java.util.UUID;
 
 public class MainActivity extends ActionBarActivity {
 
-    private MediaController mediaController;
-    private boolean audioPlayToggle = false;
     private VideoViewWrapper videoViewWrapper = null;
     private MediaRecorderWrapper mediaRecorderWrapper = null;
     Button videoButton = null;
-    Intent mServiceIntent;
     Context context;
-    String mFileName = null;
     private final static String videoFile = "reversedub/video.mp4";
     private final static String audioOutFile = "reversedub/audioout.m4a";
     private final static String videoOutfile = "reversedub/videoMerged.mp4";
-    String externalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+    private final static String externalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
 
     private enum VideoButtonText{
         Record,
@@ -53,13 +49,8 @@ public class MainActivity extends ActionBarActivity {
         VideoView vidView = (VideoView)findViewById(R.id.myVideo);
         videoViewWrapper = new VideoViewWrapper(vidView, getFullPath(videoFile));
 
-        if(!audioPlayToggle) {
-            //videoViewWrapper.FirstRender();
-        }
-
         context = this;
-        mFileName = getFullPath(audioOutFile);
-        DeleteFileIfExists(mFileName);
+        DeleteFileIfExists(getFullPath(audioOutFile));
         DeleteFileIfExists(getFullPath(videoOutfile));
 
         mediaRecorderWrapper = new MediaRecorderWrapper(audioOutFile);
@@ -79,7 +70,7 @@ public class MainActivity extends ActionBarActivity {
                     videoViewWrapper.onPlay(false);
                     videoButton.setText(VideoButtonText.Record.toString());
                     mediaRecorderWrapper.onPlay(true);
-                    DeleteFileIfExists(mFileName);
+                    DeleteFileIfExists(getFullPath(audioOutFile));
                 }
                 else if (VideoButtonText.Merge.toString().equalsIgnoreCase(buttonText))
                 {
