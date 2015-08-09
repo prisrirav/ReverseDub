@@ -38,6 +38,7 @@ public class MainActivity extends ActionBarActivity {
     private final static String videoFile = "reversedub/video.mp4";
     private final static String audioOutFile = "reversedub/audioout.m4a";
     private final static String videoOutfile = "reversedub/videoMerged.mp4";
+    String externalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
 
     private enum VideoButtonText{
         Record,
@@ -50,17 +51,16 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         VideoView vidView = (VideoView)findViewById(R.id.myVideo);
-        videoViewWrapper = new VideoViewWrapper(vidView, videoFile);
+        videoViewWrapper = new VideoViewWrapper(vidView, getFullPath(videoFile));
 
         if(!audioPlayToggle) {
             //videoViewWrapper.FirstRender();
         }
 
         context = this;
-        String externalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName = externalDirectory + "/" + audioOutFile;
+        mFileName = getFullPath(audioOutFile);
         DeleteFileIfExists(mFileName);
-        DeleteFileIfExists(externalDirectory + "/" + videoOutfile);
+        DeleteFileIfExists(getFullPath(videoOutfile));
 
         mediaRecorderWrapper = new MediaRecorderWrapper(audioOutFile);
 
@@ -85,7 +85,7 @@ public class MainActivity extends ActionBarActivity {
                 {
                     Intent mergeActivityIntent = new Intent(MainActivity.this, MergedVideoPlayActivity.class);
 
-                    mergeActivityIntent.putExtra(MergedVideoPlayActivity.MERGED_FILE_KEYNAME, videoOutfile);
+                    mergeActivityIntent.putExtra(MergedVideoPlayActivity.MERGED_FILE_KEYNAME, getFullPath(videoOutfile));
                     startActivity(mergeActivityIntent);
                     finish();
                 }
@@ -97,7 +97,7 @@ public class MainActivity extends ActionBarActivity {
                 public void onCompletion(MediaPlayer mp) {
                     mediaRecorderWrapper.onRecord(false);
                     videoButton.setText(VideoButtonText.Merge.toString());
-                    Boolean result = AudioVideoMuxer.CombineFilesUsingMp4Parser(videoFile, audioOutFile, videoOutfile);
+                    Boolean result = AudioVideoMuxer.CombineFilesUsingMp4Parser(getFullPath(videoFile), getFullPath(audioOutFile), getFullPath(videoOutfile));
                     if (result) {
                         videoButton.setText(VideoButtonText.Merge.toString());
                     } else {
@@ -106,6 +106,10 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         );
+    }
+
+    private String getFullPath(String fileName) {
+        return externalDirectory + "/" + fileName;
     }
 
     private void DeleteFileIfExists(String mFileName) {

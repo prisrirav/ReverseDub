@@ -7,7 +7,6 @@ import android.widget.VideoView;
 
 public class VideoViewWrapper {
     private static final String LOG_TAG = "AudioRecordTest";
-    private static String mFileName = null;
 
     private VideoView vidView = null;
 
@@ -18,13 +17,10 @@ public class VideoViewWrapper {
             return;
         }
 
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/" + fileName;
         vidView = videoView;
-        String vidAddress = mFileName;
         /*Uri vidUri = Uri.parse(vidAddress);
         vidView.setVideoURI(vidUri);*/
-        vidView.setVideoPath(mFileName);
+        vidView.setVideoPath(fileName);
     }
 
     public void FirstRender()
