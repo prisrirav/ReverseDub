@@ -108,7 +108,7 @@ public class AudioVideoMuxer  {
         return true;
     }
 
-    private Boolean CombineFilesUsingMp4Parser(String videoFile, String audioFile, String outputFile)
+    public static Boolean CombineFilesUsingMp4Parser(String videoFile, String audioFile, String outputFile)
     {
         Movie video;
         try {

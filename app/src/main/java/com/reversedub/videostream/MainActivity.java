@@ -36,6 +36,12 @@ public class MainActivity extends ActionBarActivity {
     Context context;
     String mFileName = null;
 
+    private enum VideoButtonText{
+        Record,
+        Cancel,
+        Merge
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +57,10 @@ public class MainActivity extends ActionBarActivity {
         context = this;
         String uuid = UUID.randomUUID().toString().replaceAll("-","");
         String fileName = String.format("reversedub/audioout.m4a", uuid);
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/" + fileName;
+        String externalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFileName = externalDirectory + "/" + fileName;
         DeleteFileIfExists(mFileName);
+        DeleteFileIfExists(externalDirectory + "/" + "reversedub/output.mp4");
 
         mediaRecorderWrapper = new MediaRecorderWrapper(fileName);
 
@@ -61,17 +68,27 @@ public class MainActivity extends ActionBarActivity {
         videoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                audioPlayToggle = !audioPlayToggle;
-                if (audioPlayToggle) {
-                    mediaRecorderWrapper.onRecord(audioPlayToggle);
-                    videoViewWrapper.onPlay(audioPlayToggle);
-                    videoButton.setText("Cancel");
-                } else {
+                String buttonText = videoButton.getText().toString();
+
+                if (VideoButtonText.Record.toString().equalsIgnoreCase(buttonText)) {
+                    mediaRecorderWrapper.onRecord(true);
+                    videoViewWrapper.onPlay(true);
+                    videoButton.setText(VideoButtonText.Cancel.toString());
+                } else if (VideoButtonText.Cancel.toString().equalsIgnoreCase(buttonText)){
                     mediaRecorderWrapper.onRecord(false);
-                    videoViewWrapper.onPlay(audioPlayToggle);
-                    videoButton.setText("Record");
+                    videoViewWrapper.onPlay(false);
+                    videoButton.setText(VideoButtonText.Record.toString());
                     mediaRecorderWrapper.onPlay(true);
-                    //DeleteFileIfExists(mFileName);
+                    DeleteFileIfExists(mFileName);
+                }
+                else if (VideoButtonText.Merge.toString().equalsIgnoreCase(buttonText))
+                {
+                    Intent mergeActivityIntent = new Intent(MainActivity.this, MergedVideoPlayActivity.class);
+
+                    //Refactor strings
+                    mergeActivityIntent.putExtra(MergedVideoPlayActivity.MERGED_FILE_KEYNAME, "/sdcard/reversedub/output.mp4");
+                    startActivity(mergeActivityIntent);
+                    finish();
                 }
             }
         });
@@ -81,7 +98,14 @@ public class MainActivity extends ActionBarActivity {
                 public void onCompletion(MediaPlayer mp) {
                     mediaRecorderWrapper.onRecord(false);
                     videoButton.setText("Merge");
-                    mediaRecorderWrapper.onPlay(true);
+                    Boolean result = AudioVideoMuxer.CombineFilesUsingMp4Parser("/sdcard/reversedub/video.mp4", "/sdcard/reversedub/audioout.m4a", "/sdcard/reversedub/output.mp4");
+                    if (result) {
+                        videoButton.setText(VideoButtonText.Merge.toString());
+                    } else {
+                        videoButton.setText("Operation failed.");
+                    }
+
+                    //mediaRecorderWrapper.onPlay(true);
                 }
             }
         );
@@ -123,7 +147,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onPause() {
-        mediaRecorderWrapper.onPause();
+        //mediaRecorderWrapper.onPause();
 
         // enable the following after mux integration is done.
         //DeleteFileIfExists(mFileName);
