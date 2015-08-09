@@ -59,14 +59,13 @@ public class MainActivity extends ActionBarActivity {
                     mediaRecorderWrapper.onRecord(false);
                     videoViewWrapper.onPlay(false);
                     videoButton.setText(VideoButtonText.Record.toString());
-                    mediaRecorderWrapper.onPlay(true);
                     DeleteFileIfExists(getFullPath(audioOutFile));
                 }
                 else if (VideoButtonText.Merge.toString().equalsIgnoreCase(buttonText))
                 {
                     Intent mergeActivityIntent = new Intent(MainActivity.this, MergedVideoPlayActivity.class);
 
-                    mergeActivityIntent.putExtra(MergedVideoPlayActivity.MERGED_FILE_KEYNAME, getFullPath(videoOutfile));
+                    mergeActivityIntent.putExtra(MergedVideoPlayActivity.MERGED_FILE_KEYNAME, getFullPath(videoFile));
                     startActivity(mergeActivityIntent);
                     finish();
                 }
@@ -78,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
                 public void onCompletion(MediaPlayer mp) {
                     mediaRecorderWrapper.onRecord(false);
                     videoButton.setText(VideoButtonText.Merge.toString());
-                    Boolean result = AudioVideoMuxer.Combine(getFullPath(videoFile), getFullPath(audioOutFile), getFullPath(videoOutfile));
+                   Boolean result = AudioVideoMuxer.Combine(getFullPath(videoFile), getFullPath(audioOutFile), getFullPath(videoOutfile));
                     if (result) {
                         videoButton.setText(VideoButtonText.Merge.toString());
                     } else {
@@ -122,13 +121,5 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onPause() {
-        //mediaRecorderWrapper.onPause();
-
-        // enable the following after mux integration is done.
-        //DeleteFileIfExists(mFileName);
     }
 }
